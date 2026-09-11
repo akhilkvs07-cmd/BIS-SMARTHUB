@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 import requests
+from backend.cad import analyze_ascii_stl
 
 ROOT = Path(__file__).resolve().parents[1]
 FRONTEND = ROOT / "frontend"
@@ -10,12 +11,19 @@ SMARTGUIDE_API_URL = os.getenv("SMARTGUIDE_API_URL", "").rstrip("/")
 app = Flask(__name__, static_folder=str(FRONTEND), static_url_path="")
 
 
+def smartguide_url(path):
+    base = SMARTGUIDE_API_URL.rstrip("/")
+    # Accept either the SmartGuide host root or a configured /api/v8 base.
+    if base.endswith("/api/v8") and path.startswith("/api/v8"):
+        return base + path[len("/api/v8"):]
+    return base + path
+
+
 def proxy(path, method="GET", payload=None, params=None):
     if not SMARTGUIDE_API_URL:
         return None, "SmartGuide connector is not configured"
-    url = f"{SMARTGUIDE_API_URL}{path}"
     try:
-        r = requests.request(method, url, json=payload, params=params, timeout=20)
+        r = requests.request(method, smartguide_url(path), json=payload, params=params, timeout=20)
         try:
             data = r.json()
         except ValueError:
@@ -45,12 +53,7 @@ def copilot():
     if result:
         data, status = result
         return jsonify({"source": "SmartGuide", "data": data}), status
-    return jsonify({
-        "source": "SmartHub",
-        "status": "connector_required",
-        "message": error,
-        "next": "Set SMARTGUIDE_API_URL to the deployed SmartGuide API."
-    }), 503
+    return jsonify({"source": "SmartHub", "status": "connector_required", "message": error}), 503
 
 
 @app.post("/api/product-intelligence")
@@ -65,8 +68,7 @@ def product_intelligence():
 
 @app.get("/api/labs")
 def labs():
-    query = request.args.to_dict()
-    result, error = proxy("/api/v8/labs/match", "GET", params=query)
+    result, error = proxy("/api/v8/labs/match", "GET", params=request.args.to_dict())
     if result:
         data, status = result
         return jsonify(data), status
@@ -91,6 +93,37 @@ def report():
         data, status = result
         return jsonify(data), status
     return jsonify({"error": error, "status": "connector_required"}), 503
+
+
+@app.post("/api/cad/analyze")
+def cad_analyze():
+    body = request.get_json(silent=True) or {}
+    stl = str(body.get("stl") or "")
+    if not stl.strip():
+        return jsonify({"error": "stl is required", "status": "invalid_request"}), 400
+    try:
+        return jsonify({"source": "SmartHub CAD engine", "data": analyze_ascii_stl(stl)})
+    except (ValueError, TypeError) as exc:
+        return jsonify({"error": str(exc), "status": "unsupported_or_invalid_stl"}), 400
+
+
+@app.get("/api/passport")
+def passport():
+    product = request.args.get("product", "")
+    return jsonify({
+        "product": product,
+        "status": "WORKSPACE_NOT_STARTED" if not product else "WORKSPACE_STARTED",
+        "items": [
+            {"id": "product", "label": "Product identified", "status": "pending"},
+            {"id": "standards", "label": "Applicable standards", "status": "pending"},
+            {"id": "requirements", "label": "Mandatory requirements", "status": "pending"},
+            {"id": "tests", "label": "Required tests", "status": "pending"},
+            {"id": "documents", "label": "Documents", "status": "pending"},
+            {"id": "lab", "label": "Testing laboratory", "status": "pending"},
+            {"id": "readiness", "label": "Readiness assessment", "status": "pending"}
+        ],
+        "trust_note": "Readiness is an evidence-based planning aid, not legal certification."
+    })
 
 
 @app.get("/")
