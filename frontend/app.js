@@ -1,41 +1,13 @@
-const toast = document.getElementById('toast');
-const input = document.getElementById('copilotInput');
-
-function show(message){
-  toast.textContent = message;
-  toast.classList.add('show');
-  clearTimeout(window.__toast);
-  window.__toast = setTimeout(()=>toast.classList.remove('show'),2600);
-}
-
-const prompts = document.querySelectorAll('[data-prompt]');
-prompts.forEach(button => button.addEventListener('click', () => {
-  input.value = button.dataset.prompt;
-  input.focus();
-}));
-
-document.getElementById('askBtn').addEventListener('click', () => {
-  const value = input.value.trim();
-  if (!value) return show('Type a BIS question to start.');
-  show('Copilot workflow is ready — intelligence and evidence connectors will be attached next.');
-});
-
-document.querySelectorAll('[data-action]').forEach(card => card.addEventListener('click', () => {
-  const labels = {
-    consumer:'Consumer product-check workflow',
-    manufacturer:'MSME compliance workspace',
-    scan:'Scan Anything workflow',
-    standard:'Standards intelligence search',
-    lab:'Smart laboratory matching',
-    report:'Suspicious product reporting'
-  };
-  show(`${labels[card.dataset.action]} is part of the SmartHub build.`);
-}));
-
-document.getElementById('profileBtn').addEventListener('click', () => {
-  show('Role selection will personalize your SmartHub dashboard.');
-});
-
-document.getElementById('languageBtn').addEventListener('click', () => {
-  show('Language foundation: English, Hindi, Kannada, Telugu and Tamil.');
-});
+const toast=document.getElementById('toast'),input=document.getElementById('copilotInput'),roleButton=document.getElementById('profileBtn'),languageButton=document.getElementById('languageBtn');let role=localStorage.getItem('smarthub_role')||'general';
+function show(m,ok=true){toast.textContent=m;toast.dataset.type=ok?'ok':'error';toast.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>toast.classList.remove('show'),3200)}
+function esc(v){return String(v).replace(/[&<>\'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function setRole(v,l){role=v;localStorage.setItem('smarthub_role',v);roleButton.textContent=l;show(`SmartHub is now tailored for ${l}.`)}
+const roles=[['consumer','👤 Consumer'],['manufacturer_msme','🏭 Manufacturer / MSME'],['importer','📦 Importer'],['procurement','🛒 Procurement'],['laboratory','🧪 Laboratory'],['compliance','📋 Compliance Professional']];roleButton.textContent=role==='general'?'Choose your role':(roles.find(r=>r[0]===role)?.[1]||'Choose your role');
+function openPanel(title,body){document.querySelector('.panel')?.remove();const p=document.createElement('div');p.className='panel';p.innerHTML=`<div class="panel-backdrop"></div><div class="panel-card"><button class="panel-close">×</button><div class="eyebrow">BIS SMARTHUB</div><h2>${title}</h2><div class="panel-body">${body}</div></div>`;document.body.appendChild(p);p.querySelector('.panel-close').onclick=()=>p.remove();p.querySelector('.panel-backdrop').onclick=()=>p.remove();return p}
+async function post(path,payload){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.message||d.error||`Request failed (${r.status})`);return d}
+async function ask(message){show('SmartHub is tracing the right workflow…');try{const r=await post('/api/copilot',{message,role}),d=r.data||r,route=d?.data?.route||d?.route||[],answer=d?.data?.answer||d?.answer||d?.message||'Workflow identified.';openPanel('SmartHub Copilot',`<p class="answer">${esc(answer)}</p><div class="route"><strong>Suggested workflow</strong>${(Array.isArray(route)?route:[route]).map(x=>`<span>${esc(x)}</span>`).join('')}</div><small>Connected SmartGuide evidence is surfaced when available. Unsupported verification remains unverified.</small>`)}catch(e){show(e.message,false);openPanel('SmartHub Copilot',`<div class="notice"><strong>Connector not ready</strong><p>${esc(e.message)}</p><p>Set <code>SMARTGUIDE_API_URL</code> on the SmartHub backend to connect the existing SmartGuide intelligence layer.</p></div>`)}}
+document.querySelectorAll('[data-prompt]').forEach(b=>b.onclick=()=>{input.value=b.dataset.prompt;input.focus()});document.getElementById('askBtn').onclick=()=>{const v=input.value.trim();if(!v)return show('Type a BIS question to start.');ask(v)};input.onkeydown=e=>{if(e.key==='Enter')document.getElementById('askBtn').click()};
+const views={consumer:['Check a product',`<p>Enter a product name and SmartHub will connect product intelligence, applicable standards and available verification evidence.</p><form data-kind="product"><input name="product" placeholder="e.g. electric iron" required><button class="primary">Check product</button></form><div id="panelResult"></div>`],manufacturer:['Compliance Workspace',`<p>Build a product journey from applicable standards through tests, documents, labs and readiness.</p><div class="steps"><span>1 Product</span><span>2 Standards</span><span>3 Requirements</span><span>4 Tests</span><span>5 Lab</span><span>6 Readiness</span></div><form data-kind="manufacturer"><input name="product" placeholder="Product name" required><button class="primary">Start workspace</button></form><div id="panelResult"></div>`],scan:['Scan Anything',`<p>Use the connected verification workflow for QR/barcode evidence. Camera/file capture is the next UI layer.</p><div class="notice">Never treat an unavailable registry source as verified.</div>`],standard:['Find a BIS standard',`<p>Enter a product and SmartHub will route the request to Product Intelligence and RAG.</p><form data-kind="product"><input name="product" placeholder="e.g. gas stove" required><button class="primary">Find standards</button></form><div id="panelResult"></div>`],lab:['Find a testing lab',`<p>Tell SmartHub what you need tested. Connected lab matching can return capability-aware results and directions.</p><form data-kind="lab"><input name="standard" placeholder="Standard or test requirement" required><input name="city" placeholder="City (optional)"><button class="primary">Match labs</button></form><div id="panelResult"></div>`],report:['Report a suspicious product',`<p>Submit observations for review. SmartHub does not label a product counterfeit without authoritative evidence.</p><form data-kind="report"><input name="product" placeholder="Product name" required><textarea name="details" placeholder="What looks suspicious?" required></textarea><button class="primary">Submit report</button></form><div id="panelResult"></div>`]};
+document.querySelectorAll('[data-action]').forEach(card=>card.onclick=()=>{const v=views[card.dataset.action];if(!v)return;const p=openPanel(v[0],v[1]),form=p.querySelector('form');if(!form)return;form.onsubmit=async e=>{e.preventDefault();const f=new FormData(form),box=p.querySelector('#panelResult');box.innerHTML='<p>Working…</p>';try{let result,k=form.dataset.kind;if(k==='product')result=await post('/api/product-intelligence',{query:f.get('product'),product:f.get('product')});else if(k==='manufacturer')result=await post('/api/copilot',{message:`I want to manufacture ${f.get('product')}. Build my compliance journey.`,role:'manufacturer_msme'});else if(k==='lab'){const q=new URLSearchParams({standard:f.get('standard')});if(f.get('city'))q.set('city',f.get('city'));const r=await fetch('/api/labs?'+q);result=await r.json();if(!r.ok)throw new Error(result.error||result.message||'Lab search failed')}else result=await post('/api/report',{product:f.get('product'),details:f.get('details')});box.innerHTML=`<pre>${esc(JSON.stringify(result,null,2))}</pre>`}catch(err){box.innerHTML=`<div class="notice"><strong>Not connected yet</strong><p>${esc(err.message)}</p></div>`}}});
+roleButton.onclick=()=>openPanel('Choose your role',`<div class="role-grid">${roles.map(r=>`<button class="role-option" data-role="${r[0]}" data-label="${r[1]}">${r[1]}</button>`).join('')}</div>`);document.body.onclick=e=>{const b=e.target.closest('.role-option');if(b?.dataset.role){setRole(b.dataset.role,b.dataset.label);document.querySelector('.panel')?.remove()}};
+languageButton.onclick=()=>openPanel('Language',`<p>SmartHub is designed for English, Hindi, Kannada, Telugu and Tamil.</p><div class="role-grid">${['English','Hindi','Kannada','Telugu','Tamil'].map(x=>`<button class="role-option">${x}</button>`).join('')}</div><small>Translation quality depends on the connected language service.</small>`);
