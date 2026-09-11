@@ -9,87 +9,32 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">
-      <div class="brand-mark">BIS</div>
-      <div>
-        <strong>BIS SmartHub</strong>
-        <span>Standards • Safety • Compliance</span>
-      </div>
-    </div>
-    <div class="top-actions">
-      <button class="ghost" id="languageBtn">English ▾</button>
-      <button class="profile" id="profileBtn">Choose your role</button>
-    </div>
+    <div class="brand"><div class="brand-mark">BIS</div><div><strong>BIS SmartHub</strong><span>Standards • Safety • Compliance</span></div></div>
+    <div class="top-actions"><button class="ghost" id="languageBtn">English ▾</button><button class="profile" id="profileBtn">Choose your role</button></div>
   </header>
-
   <main>
     <section class="hero">
       <div class="eyebrow">BIS SMART HUB • SOURCE-GROUNDED</div>
       <h1>Everything you need to understand BIS requirements.</h1>
       <p>Ask a question, scan a product, or start a compliance journey. SmartHub connects the right workflow for you.</p>
-      <div class="copilot">
-        <div class="copilot-icon">✦</div>
-        <input id="copilotInput" placeholder="Try: I want to manufacture an electric iron. What do I need?" autocomplete="off" />
-        <button id="askBtn">Ask SmartHub</button>
-      </div>
-      <div class="examples">
-        <button data-prompt="Is this product BIS compliant?">Check a product</button>
-        <button data-prompt="What BIS standard applies to my product?">Find a standard</button>
-        <button data-prompt="Find a testing laboratory for my product">Find a lab</button>
-      </div>
+      <div class="copilot"><div class="copilot-icon">✦</div><input id="copilotInput" placeholder="Try: I want to manufacture an electric iron. What do I need?" autocomplete="off" /><button id="askBtn">Ask SmartHub</button></div>
+      <div class="examples"><button data-prompt="Is this product BIS compliant?">Check a product</button><button data-prompt="What BIS standard applies to my product?">Find a standard</button><button data-prompt="Find a testing laboratory for my product">Find a lab</button></div>
     </section>
-
-    <section class="section">
-      <div class="section-heading">
-        <div>
-          <h2>What do you want to do?</h2>
-          <p>Choose a starting point. SmartHub handles the technical steps behind the scenes.</p>
-        </div>
-      </div>
+    <section class="section"><div class="section-heading"><div><h2>What do you want to do?</h2><p>Choose a starting point. SmartHub handles the technical steps behind the scenes.</p></div></div>
       <div class="cards">
-        <button class="action-card" data-action="consumer">
-          <span class="icon">🛒</span><strong>Check a product</strong><span>Understand standards, marks, QR codes and safety information.</span>
-        </button>
-        <button class="action-card" data-action="manufacturer">
-          <span class="icon">🏭</span><strong>Start a compliance journey</strong><span>Product → standard → tests → lab → documents → readiness.</span>
-        </button>
-        <button class="action-card" data-action="scan">
-          <span class="icon">📷</span><strong>Scan anything</strong><span>QR, barcode, ISI/CM-L, HUID, CRS, label or document.</span>
-        </button>
-        <button class="action-card" data-action="standard">
-          <span class="icon">📚</span><strong>Find a BIS standard</strong><span>Search standards and understand what they mean.</span>
-        </button>
-        <button class="action-card" data-action="lab">
-          <span class="icon">🧪</span><strong>Find a testing lab</strong><span>Match required tests to capable laboratories and get directions.</span>
-        </button>
-        <button class="action-card" data-action="report">
-          <span class="icon">🚨</span><strong>Report a suspicious product</strong><span>Submit information for review without making unsupported claims.</span>
-        </button>
+        <button class="action-card" data-action="consumer"><span class="icon">🛒</span><strong>Check a product</strong><span>Understand standards, marks, QR codes and safety information.</span></button>
+        <button class="action-card" data-action="manufacturer"><span class="icon">🏭</span><strong>Start a compliance journey</strong><span>Product → standard → tests → lab → documents → readiness.</span></button>
+        <button class="action-card" data-action="scan"><span class="icon">📷</span><strong>Scan anything</strong><span>QR, barcode, ISI/CM-L, HUID, CRS, label or document.</span></button>
+        <button class="action-card" data-action="standard"><span class="icon">📚</span><strong>Find a BIS standard</strong><span>Search standards and understand what they mean.</span></button>
+        <button class="action-card" data-action="lab"><span class="icon">🧪</span><strong>Find a testing lab</strong><span>Match required tests to capable laboratories and get directions.</span></button>
+        <button class="action-card" data-action="cad"><span class="icon">📐</span><strong>Check a CAD/STL model</strong><span>Measure geometry and prepare an evidence-aware engineering review.</span></button>
+        <button class="action-card" data-action="passport"><span class="icon">🛡️</span><strong>Open Compliance Passport</strong><span>Track standards, tests, documents, labs and readiness for a product.</span></button>
+        <button class="action-card" data-action="report"><span class="icon">🚨</span><strong>Report a suspicious product</strong><span>Submit information for review without unsupported claims.</span></button>
       </div>
     </section>
-
-    <section class="workspace">
-      <div>
-        <div class="eyebrow">FOR MANUFACTURERS & MSMEs</div>
-        <h2>Your Compliance Workspace</h2>
-        <p>Keep standards, tests, documents, laboratories and evidence connected to one product.</p>
-      </div>
-      <div class="progress-card">
-        <div class="progress-top"><strong>Example: Electric Iron</strong><span>Demo workspace</span></div>
-        <div class="progress-bar"><i></i></div>
-        <div class="progress-label"><span>Compliance readiness</span><strong>Not started</strong></div>
-        <button class="primary" data-action="manufacturer">Start workspace</button>
-      </div>
-    </section>
-
-    <section class="trust">
-      <div><span class="dot"></span><strong>Evidence-first</strong><p>Claims are separated from verified source evidence.</p></div>
-      <div><span class="dot"></span><strong>Human-readable</strong><p>Technical BIS requirements are explained in plain language.</p></div>
-      <div><span class="dot"></span><strong>No fake verification</strong><p>Unavailable authoritative evidence stays clearly unverified.</p></div>
-    </section>
+    <section class="workspace"><div><div class="eyebrow">FOR MANUFACTURERS & MSMEs</div><h2>Your Compliance Workspace</h2><p>Keep standards, tests, documents, laboratories and evidence connected to one product.</p></div><div class="progress-card"><div class="progress-top"><strong>Example: Electric Iron</strong><span>Planning workspace</span></div><div class="progress-bar"><i></i></div><div class="progress-label"><span>Compliance readiness</span><strong>Not started</strong></div><button class="primary" data-action="manufacturer">Start workspace</button></div></section>
+    <section class="trust"><div><span class="dot"></span><strong>Evidence-first</strong><p>Claims are separated from verified source evidence.</p></div><div><span class="dot"></span><strong>Human-readable</strong><p>Technical BIS requirements are explained in plain language.</p></div><div><span class="dot"></span><strong>No fake verification</strong><p>Unavailable authoritative evidence stays clearly unverified.</p></div></section>
   </main>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="./app.js"></script>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div><script src="./app.js"></script>
 </body>
 </html>
